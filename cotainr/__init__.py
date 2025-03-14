@@ -9,7 +9,7 @@ Licensed under the European Union Public License (EUPL) 1.2
 
 import sys
 
-__version__ = "2025.03.0"
+__version__ = "2025.03.1"
 _minimum_dependency_version = {
     # Versions must be specified as a (major, minor, patchlevel) tuple of
     # integers
