@@ -77,7 +77,7 @@ jobs:
       run: |
         sudo apt install ./singularity_installer.deb
         singularity --version
-          
+
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
 
