@@ -36,10 +36,10 @@ jobs:
 
     steps:
     - name: Dump GitHub context
-      env: 
+      env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
-      
+
     - uses: actions/checkout@v4  # Checkout because `uv publish` requires pyproject.toml
     - name: Download all the dists
       uses: actions/download-artifact@v4
