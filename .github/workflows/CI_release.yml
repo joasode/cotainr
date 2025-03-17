@@ -3,6 +3,7 @@ name: CI for release
 on:
   workflow_dispatch:
   release:
+    types: [release]
 
 jobs:
   build:
