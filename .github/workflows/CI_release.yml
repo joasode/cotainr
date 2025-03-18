@@ -89,12 +89,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install test dependencies
-        with:
-	  cotainr-version: ${{ github.event.tag_name }}
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install cotainr=cotainr-version --index https://test.pypi.org/simple/
-	  python3 -m pip install 'cotainr[tests]' # Get PyTest from real PyPI index
+          python3 -m pip install cotainr=${{ github.event.tag_name }} --index https://test.pypi.org/simple/
+          python3 -m pip install 'cotainr[tests]' # Get PyTest from real PyPI index
       - name: Run test suite via pytest
         run: pytest -vv --junitxml=pytest_junit_out.xml
       - name: Archive the test results and coverage
@@ -135,12 +133,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install test dependencies
-        with:
-	  cotainr-version: ${{ github.event.tag_name }}
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install cotainr=cotainr-version --index https://test.pypi.org/simple/
-	  python3 -m pip install 'cotainr[tests]' # Get PyTest from real PyPI index
+          python3 -m pip install cotainr=${{ github.event.tag_name }} --index https://test.pypi.org/simple/
+          python3 -m pip install 'cotainr[tests]' # Get PyTest from real PyPI index
       - name: Run test suite via pytest
         run: pytest -vv --junitxml=pytest_junit_out.xml
       - name: Archive the test results and coverage
