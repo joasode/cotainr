@@ -2,6 +2,9 @@ name: CI for release
 
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - '*+.[0-12]+.*+'
   release:
     types: [released]
 
@@ -50,11 +53,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
-
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
 
@@ -63,7 +61,6 @@ jobs:
         uv venv
         source .venv/bin/activate
         uv pip install cotainr==${{ github.ref_name }} --index https://test.pypi.org/simple/
-        uv pip install 'cotainr[tests]' # Get Pytest from real PyPI distribution
         cotainr info
         cotainr build --help
 
