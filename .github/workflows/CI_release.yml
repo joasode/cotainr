@@ -25,7 +25,6 @@ jobs:
   publish-to-testpypi:
     needs: build
     name: Publish to TestPyPI
-    # only publish to TestPyPI on tag pushes and successful test workflow
     runs-on: ubuntu-latest
 
     environment:
