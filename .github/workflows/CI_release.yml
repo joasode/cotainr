@@ -62,7 +62,7 @@ jobs:
       run: |
         uv venv
         source .venv/bin/activate
-        uv pip install cotainr==${{ github.event.tag_name }} --index https://test.pypi.org/simple/
+        uv pip install cotainr=${{ github.ref_name }} --index https://test.pypi.org/simple/
         uv pip install 'cotainr[tests]' # Get Pytest from real PyPI distribution
 	cotainr info
 	cotainr build --help
