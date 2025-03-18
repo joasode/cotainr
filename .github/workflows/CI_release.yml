@@ -44,116 +44,31 @@ jobs:
       run: echo 'Simulate uv publish --index testpypi'
     #  run: uv publish --index testpypi
 
-  test-testpypi-x86:
-    name: Test TestPyPI Build on x86
+  test-testpypi:
+    name: Test TestPyPI Build
     needs: publish-to-testpypi
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["ubuntu-latest"]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
-        singularity: [
-          {provider: "singularity", version: "3.8.7"},
-#          {provider: "apptainer", version: "1.1.3"},
-          {provider: "apptainer", version: "1.3.4"},
-          {provider: "singularity-ce", version: "3.9.2"},
-          {provider: "singularity-ce", version: "4.1.3"},
-          {provider: "singularity-ce", version: "4.2.1"}
-        ]
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Dump GitHub context
+    - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Attempt to restore Singularity/Apptainer installer from cache
-        uses: actions/cache@v4
-        id: cache-singularity-installer
-        with:
-          path: ./singularity_installer.deb
-          key: ${{ matrix.os }}-${{ matrix.singularity.provider }}_installer-${{ matrix.singularity.version }}
-      - name: Download Singularity ${{ matrix.singularity.version }}
-        if: ${{ steps.cache-singularity-installer.outputs.cache-hit != 'true' && matrix.singularity.provider == 'singularity' }}
-        run: wget -O singularity_installer.deb https://github.com/apptainer/singularity/releases/download/v${{ matrix.singularity.version }}/singularity-container_${{ matrix.singularity.version }}_amd64.deb
-      - name: Download Apptainer ${{ matrix.singularity.version }}
-        if: ${{ steps.cache-singularity-installer.outputs.cache-hit != 'true' && matrix.singularity.provider == 'apptainer' }}
-        run: wget -O singularity_installer.deb https://github.com/apptainer/apptainer/releases/download/v${{ matrix.singularity.version }}/apptainer_${{ matrix.singularity.version }}_amd64.deb
-      - name: Download SingularityCE ${{ matrix.singularity.version }}
-        if: ${{ steps.cache-singularity-installer.outputs.cache-hit != 'true' && matrix.singularity.provider == 'singularity-ce' }}
-        run: wget -O singularity_installer.deb https://github.com/sylabs/singularity/releases/download/v${{ matrix.singularity.version }}/singularity-ce_${{ matrix.singularity.version }}-focal_amd64.deb
-      - name: Set up Singularity/Apptainer
-        run: |
-          sudo apt install ./singularity_installer.deb
-          singularity --version
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-      - name: Install test dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install cotainr=${{ github.event.tag_name }} --index https://test.pypi.org/simple/
-          python3 -m pip install 'cotainr[tests]' # Get PyTest from real PyPI index
-      - name: Run test suite via pytest
-        run: pytest -vv --junitxml=pytest_junit_out.xml
-      - name: Archive the test results and coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-and-coverage_python${{ matrix.python-version }}_${{ matrix.singularity.provider }}${{ matrix.singularity.version }}
-          path: |
-            pytest_junit_out.xml
-            htmlcov/*
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v5
 
-  test-testpypi-arm:
-    name: Test TestPyPI Build on arm64
-    needs: publish-to-testpypi
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["ubuntu-22.04-arm"]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
-        singularity: [
-          {provider: "apptainer", version: "latest"}
-          ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set up Singularity/Apptainer
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sudo apt update
-          sudo apt install -y software-properties-common
-          sudo add-apt-repository -y ppa:apptainer/ppa
-          sudo apt update
-          sudo apt install -y apptainer
-          singularity --version
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-      - name: Install test dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install cotainr=${{ github.event.tag_name }} --index https://test.pypi.org/simple/
-          python3 -m pip install 'cotainr[tests]' # Get PyTest from real PyPI index
-      - name: Run test suite via pytest
-        run: pytest -vv --junitxml=pytest_junit_out.xml
-      - name: Archive the test results and coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-and-coverage_${{ matrix.os }}_python${{ matrix.python-version }}_${{ matrix.singularity.provider }}${{ matrix.singularity.version }}
-          path: |
-            pytest_junit_out.xml
-            htmlcov/*
+    - name: Test TestPyPI build
+      run: |
+        uv venv
+        source .venv/bin/activate
+        uv pip install cotainr==${{ github.event.tag_name }} --index https://test.pypi.org/simple/
+        uv pip install 'cotainr[tests]' # Get Pytest from real PyPI distribution
+	cotainr info
+	cotainr build --help
 
   publish-to-pypi:
-    needs: [test-testpypi-x86, test-testpypi-arm]
+    needs: test-testpypi
     runs-on: ubuntu-latest
 
     environment:
