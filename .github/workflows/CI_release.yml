@@ -51,9 +51,9 @@ jobs:
 
     steps:
     - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
 
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
@@ -64,8 +64,8 @@ jobs:
         source .venv/bin/activate
         uv pip install cotainr=${{ github.ref_name }} --index https://test.pypi.org/simple/
         uv pip install 'cotainr[tests]' # Get Pytest from real PyPI distribution
-	cotainr info
-	cotainr build --help
+        cotainr info
+        cotainr build --help
 
   publish-to-pypi:
     needs: test-testpypi
