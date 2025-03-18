@@ -62,6 +62,11 @@ jobs:
           {provider: "singularity-ce", version: "4.2.1"}
         ]
     steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Attempt to restore Singularity/Apptainer installer from cache
