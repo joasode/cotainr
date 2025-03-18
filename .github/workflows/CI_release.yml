@@ -43,7 +43,7 @@ jobs:
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
     - name: Publish distribution to TestPyPI
-      run: echo 'uv publish --index testpypi'
+      run: echo 'Simulate uv publish --index testpypi'
 
   test-testpypi:
     name: Test TestPyPI Build
@@ -83,4 +83,4 @@ jobs:
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
     - name: Publish distribution to PyPI
-      run: echo 'uv publish'
+      run: echo 'Simulate uv publish'
