@@ -1,21 +1,29 @@
-name: CI on release
+name: CD on release tag
 
 on:
   workflow_dispatch:
-  push:    # Initialize release with 'git push origin tag <tag_name>'
+  push:    # Initialize release with 'git push origin tag <tag_name>' where <tag_name> follows the YYYY.MM.MINOR version format
     tags:  # Actual deployment to testpypi and pypi environments requires review
       - '20[0-9][0-9].0[1-9].[0-9]+'  # Expected limits: 2000.01.0 - 2099.09.123+
       - '20[0-9][0-9].1[0-2].[0-9]+'  # Expected limits: 2000.10.0 - 2099.12.123+
-      - '0.0.0.dev[0-9]+'
+      - '0.0.0.dev[0-9]+'             # Dev tags
 
 jobs:
+  github-release:
+    name: Release on GitHub from <tag_name>
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release
+        uses: actions/checkout@v4
+        uses: softprops/action-gh-release@v2
+
   build:
     name: Build package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: uv build .
+      - run: uv build
       - uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -43,7 +51,7 @@ jobs:
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
     - name: Publish distribution to TestPyPI
-      run: echo 'Simulate uv publish --index testpypi'
+      run: echo "Simulate uv publish --index testpypi"
 
   test-testpypi:
     name: Test TestPyPI Build
@@ -53,10 +61,12 @@ jobs:
     steps:
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: false
 
     - name: Test TestPyPI build
       run: |
-        uv venv --python 3.13
+        uv venv --python 3.12
         source .venv/bin/activate
         uv pip install cotainr==${{ github.ref_name }} --index https://test.pypi.org/simple/
         cotainr info
@@ -83,4 +93,4 @@ jobs:
     - name: Set up uv
       uses: astral-sh/setup-uv@v5
     - name: Publish distribution to PyPI
-      run: echo 'Simulate uv publish'
+      run: echo "Simulate uv publish"
