@@ -10,11 +10,12 @@ on:
 
 jobs:
   github-release:
-    name: Release on GitHub from <tag_name>
+    name: GitHub Release 
     runs-on: ubuntu-latest
     steps:
-      - name: Release
+      - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Release on GitHub
         uses: softprops/action-gh-release@v2
 
   build:
