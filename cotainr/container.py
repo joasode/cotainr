@@ -64,7 +64,7 @@ class SingularitySandbox:
 
     def __init__(self, *, base_image, log_settings=None):
         """Construct the SingularitySandbox context manager."""
-        # Test reuse build on dev branch 
+        # Test reuse build on dev branch
         self.base_image = base_image
         self.sandbox_dir = None
         self.architecture = None
