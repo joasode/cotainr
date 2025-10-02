@@ -20,7 +20,7 @@ jobs:
         run: |
             module load EESSI-extend
             eb cotainr-easyconfig.eb --software-commit=$GITHUB_SHA
-	    module load cotainr
-	    cotainr --help
-	    cotainr --version
+            module load cotainr
+            cotainr --help
+            cotainr --version
         shell: bash
