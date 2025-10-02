@@ -1,12 +1,23 @@
-name: Cotainr installation on EESSI
+name: Build and test
 on: [push, pull_request]
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-and-test:
+    name: Build & Test on ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     steps:
-    - uses: eessi/github-action-eessi@v3
-    - name: Test EB install Cotainr
-      run: |
-        module load EESSI-extend
-        eb cotainr-easyconfig.eb --software-commit=$GITHUB_SHA
-      shell: bash
+      - uses: actions/checkout@v4
+      - uses: eessi/github-action-eessi@v3
+      - name: Test software build and test
+        run: |
+            module load EESSI-extend
+            eb cotainr-easyconfig.eb --software-commit=$GITHUB_SHA
+        shell: bash
