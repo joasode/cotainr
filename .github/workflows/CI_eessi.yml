@@ -8,5 +8,5 @@ jobs:
     - name: Test EB install Cotainr
       run: |
         module load EESSI-extend
-	    eb cotainr-easyconfig.eb --software-commit=$GITHUB_SHA
+        eb cotainr-easyconfig.eb --software-commit=$GITHUB_SHA
       shell: bash
