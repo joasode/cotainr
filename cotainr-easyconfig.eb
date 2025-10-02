@@ -30,4 +30,7 @@ sanity_check_paths = {
     'dirs': ['cotainr'],
 }
 
+testinstall = True
+runtest = 'pytest'
+
 sanity_check_commands = ['cotainr']
