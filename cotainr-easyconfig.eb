@@ -7,9 +7,12 @@ versionsuffix = '-%(software_commit)s'
 homepage = 'https://github.com/DeiC-HPC/container-builder'
 description = 'cotainr is a tool that helps making Singularity/Apptainer containers.'
 
+github_account = 'joasode'
+source_urls = ['https://github.com/%(github_account)s/%(name)s/archive/']
+
 sources = ['%(software_commit)s.tar.gz']
 
-toolchain = {'toolchain': 'gfbf', 'version': '2023b'}
+toolchain = {'name': 'gfbf', 'version': '2023b'}
 
 local_systems = """{
   "lumi-g": {
@@ -20,7 +23,7 @@ local_systems = """{
   }
 }"""
 
-postinstallcmds = ['cd %(installdir)s/ ; cat >local_systems.json <<EOF\n' + systems + '\nEOF\n']
+postinstallcmds = ['cd %(installdir)s/ ; cat >systems.json <<EOF\n' + local_systems + '\nEOF\n']
 
 sanity_check_paths = {
     'files': ['bin/cotainr'],
