@@ -1,0 +1,12 @@
+name: Cotainr installation on EESSI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: eessi/github-action-eessi@v3
+    - name: Test EB install Cotainr
+      run: |
+        module load EESSI-extend
+	eb cotainr-easyconfig.eb --software-commit=$GITHUB_SHA
+      shell: bash

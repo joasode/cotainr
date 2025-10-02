@@ -1,19 +1,17 @@
 easyblock = 'Tarball'
 
 name = 'cotainr'
-version = '2024.10.0'
+version = 'devel'
+versionsuffix = '-%(software_commit)s'
+
 homepage = 'https://github.com/DeiC-HPC/container-builder'
 description = 'cotainr is a tool that helps making Singularity/Apptainer containers.'
 
-sources = [ {
-  'filename': '%(name)s-%(version)s.tar.gz',
-  'download_filename': '%(version)s.tar.gz',
-  'source_urls':       ['https://github.com/DeiC-HPC/cotainr/archive/refs/tags'],
-} ]
+sources = ['%(software_commit)s.tar.gz']
 
-toolchain = SYSTEM
+toolchain = {'toolchain': 'gfbf', 'version': '2023b'}
 
-systems = """{
+local_systems = """{
   "lumi-g": {
     "base-image": "docker://rocm/dev-ubuntu-24.04:6.2.2-complete"
   },
@@ -22,7 +20,7 @@ systems = """{
   }
 }"""
 
-postinstallcmds = ['cd %(installdir)s/ ; cat >systems.json <<EOF\n' + systems + '\nEOF\n']
+postinstallcmds = ['cd %(installdir)s/ ; cat >local_systems.json <<EOF\n' + systems + '\nEOF\n']
 
 sanity_check_paths = {
     'files': ['bin/cotainr'],
